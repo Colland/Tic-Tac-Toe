@@ -1,0 +1,31 @@
+@font-face {
+    font-family: "indie-flower-normal";
+    src: url(../fonts/indieflower-regular-webfont.woff2);
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body
+{
+    height: 100%;
+}
+
+.page-wrapper
+{
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr 3fr 1fr;
+}
+
+header
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header h1
+{
+    font-size: 70px;
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif ;
+}
