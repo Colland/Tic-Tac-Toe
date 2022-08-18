@@ -29,3 +29,31 @@ header h1
     font-size: 70px;
     font-family: "indie-flower-normal", 'Times New Roman', Times, serif ;
 }
+
+main
+{
+    display: flex;
+    justify-content: center;
+}
+
+.game-container
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 3px;
+    width: 500px;
+    height: 500px;
+    border: 3px solid black;
+    background-color: black;
+}
+
+.game-container div
+{
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 80px;
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+}
