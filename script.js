@@ -7,13 +7,18 @@ const gameBoard = (function()
         boardArray.forEach((item) => item.addEventListener('click', gameController.playerMark));
     }
 
+    function removeListeners()
+    {
+        boardArray.forEach((item) => item.removeEventListener('click', gameController.playerMark));
+    }
+
     function resetBoard()
     {
-        boardArray.forEach( (item) => item.textContent = "")
+        boardArray.forEach((item) => item.textContent = "")
     }
 
     return{
-        addListeners, resetBoard
+        addListeners, removeListeners, resetBoard
     };
 })()
 
@@ -65,6 +70,11 @@ const gameController = (function()
                 {
                     const winCondition = checkWin(player1);
                     console.log(winCondition);
+
+                    if(winCondition)
+                    {
+                        gameWon(player1);
+                    }
                 }
             }
         }
@@ -82,6 +92,11 @@ const gameController = (function()
                 {
                     const winCondition = checkWin(player2);
                     console.log(winCondition);
+
+                    if(winCondition)
+                    {
+                        gameWon(player2);
+                    }
                 }
             }
         }
@@ -91,17 +106,58 @@ const gameController = (function()
     {
         let winCondition = false;
 
-        for(let i = 0; i< winningCombinations.length; i++)
+        if(arrayComparison())
         {
-            if(player.squaresMarked.every((element) => winningCombinations[i].includes(element)))
+            winCondition = true;
+            return winCondition;
+        }
+
+        //Checks to see if player array has 3 numbers that are a subset of one of the winning-combination 3 number arrays.
+        function arrayComparison(element, i)
+        {
+            //Iterates through each winningCombination 3 number array.
+            for(let i = 0; i < winningCombinations.length; i++)
             {
-                console.log("Dog");
-                winCondition = true;
-                return winCondition;
+                //counter
+                let amountOfEquivalentNumbers = 0;
+
+                //Iterates through each number in the player array.
+                for(let k = 0; k < player.squaresMarked.length; k++)
+                {
+                    //Checks if the current player number is included anywhere in the current winningCombinations 3 number array.
+                    //If true, increments the counter.
+                    if(winningCombinations[i].includes(player.squaresMarked[k]))
+                    {
+                        amountOfEquivalentNumbers++;
+                    }
+                }
+
+                //Once 3 player numbers are found in a single winning combination, returns true.
+                if(amountOfEquivalentNumbers === 3)
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
         return winCondition;
+    }
+
+    function gameWon(player)
+    {
+        gameBoard.removeListeners();
+
+        const buttonsContainer = document.querySelector(".buttons-container");
+        const newGameButton = document.createElement("button");
+
+        newGameButton.textContent = "New game";
+        newGameButton.type = "button";
+        newGameButton.classList.add("new-game-button");
+        newGameButton.addEventListener('click', startGame);
+
+        buttonsContainer.appendChild(newGameButton);
     }
 
     return {startGame, playerMark, winningCombinations}

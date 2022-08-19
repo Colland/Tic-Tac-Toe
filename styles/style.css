@@ -33,7 +33,8 @@ header h1
 main
 {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .game-container
@@ -56,4 +57,17 @@ main
     align-items: center;
     font-size: 80px;
     font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+}
+
+.new-game-button
+{
+    display: block;
+    appearance: none;
+    outline: none;
+    width: 180px;
+    height: 50px;
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+    font-size: 30px;
+    margin-top: 20px;
+    border-radius: 3px;
 }
