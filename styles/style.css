@@ -27,7 +27,7 @@ header
 header h1
 {
     font-size: 70px;
-    font-family: "indie-flower-normal", 'Times New Roman', Times, serif ;
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
 }
 
 main
@@ -37,9 +37,36 @@ main
     align-items: center;
 }
 
+.versusChoice
+{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.versusChoice button
+{
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    width: 250px;
+    height: 75px;
+    margin: 30px;
+    border: 3px solid black;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border-radius: 3px;
+    background-color: white;
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+    font-size: 40px;
+}
+
+.versusChoice button:hover
+{
+    box-shadow: 3px 3px 3px rgb(145, 145, 145);
+}
+
 .game-container
 {
-    display: grid;
+    display: none;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     grid-gap: 3px;

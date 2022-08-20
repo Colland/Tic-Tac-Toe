@@ -2,14 +2,27 @@ const gameBoard = (function()
 {
     const boardArray = document.querySelectorAll(".game-container div");
 
-    function addListeners()
+    function addListeners(isAiMatch)
     {
-        boardArray.forEach((item) => item.addEventListener('click', gameController.playerMark));
+        if(isAiMatch)
+        {
+            boardArray.forEach((item) => item.addEventListener('click', gameController.aiMatchAction));
+        }
+        else
+        {
+            boardArray.forEach((item) => item.addEventListener('click', gameController.twoPlayerMatchAction));
+        }
     }
 
     function removeListeners()
     {
         boardArray.forEach((item) => item.removeEventListener('click', gameController.playerMark));
+        //TODO remove ai match event listeners and player match listeners.
+    }
+
+    function displayBoard()
+    {
+        document.querySelector(".game-container").style.display = "grid";
     }
 
     function resetBoard()
@@ -17,8 +30,23 @@ const gameBoard = (function()
         boardArray.forEach((item) => item.textContent = "")
     }
 
+    function returnOpenSquares()
+    {
+        let openSquares = [];
+
+        for(let i = 0; i < boardArray.length; i++)
+        {
+            if(boardArray[i].textContent === "")
+            {
+                openSquares.push(parseInt(boardArray[i].dataset.index));
+            }
+        }
+
+        return openSquares;
+    }
+
     return{
-        addListeners, removeListeners, resetBoard
+        addListeners, removeListeners, resetBoard, displayBoard, returnOpenSquares
     };
 })()
 
@@ -26,6 +54,13 @@ const gameController = (function()
 {
     let player1;
     let player2;
+    let isAiMatch;
+
+    const playerButton = document.querySelector("#playerMatch")
+    const aiButton = document.querySelector("#aiMatch")
+
+    playerButton.addEventListener('click', playerMatch);
+    aiButton.addEventListener('click', aiMatch);
 
     let winningCombinations =
     [
@@ -39,10 +74,27 @@ const gameController = (function()
         [2, 4, 6]
     ]
 
+    function playerMatch()
+    {
+        isAiMatch = false;
+        playerButton.style.display = "none";
+        aiButton.style.display = "none";
+        startGame();
+    }
+
+    function aiMatch()
+    {
+        isAiMatch = true;
+        playerButton.style.display = "none";
+        aiButton.style.display = "none";
+        startGame();
+    }
+
     function startGame()
     {
+        gameBoard.displayBoard();
         gameBoard.resetBoard();
-        gameBoard.addListeners();
+        gameBoard.addListeners(isAiMatch);
         populatePlayers();
     }
 
@@ -52,7 +104,7 @@ const gameController = (function()
         player2 = Player(false);
     }
 
-    function playerMark(event)
+    function twoPlayerMatchAction(event)
     {
         let square = event.target;
         
@@ -97,6 +149,59 @@ const gameController = (function()
                     {
                         gameWon(player2);
                     }
+                }
+            }
+        }
+    }
+
+    function aiMatchAction(event)
+    {
+        let square = event.target;
+
+        if(player1.isTurn)
+        {
+            if(square.textContent === "")
+            {
+                square.textContent = "X";
+                player1.squaresMarked.push(parseInt(square.dataset.index));
+                player1.isTurn = false;
+                player2.isTurn = true;
+                player1.turnNum++;
+
+                if(player1.turnNum >= 3)
+                {
+                    const winCondition = checkWin(player1);
+
+                    if(winCondition)
+                    {
+                        player2.isTurn = false;
+                        gameWon(player1);
+                    }
+                }
+            }
+        }
+
+        if(player2.isTurn)
+        {
+            let openSquares = gameBoard.returnOpenSquares();
+            let randomSquare = openSquares[Math.floor(Math.random() * openSquares.length)];
+
+            const square = document.querySelector('[data-index=' + CSS.escape(randomSquare) + ']');
+            square.textContent = "O";
+
+            player2.squaresMarked.push(parseInt(square.dataset.index));
+            player2.isTurn = false;
+            player1.isTurn = true;
+            player2.turnNum++;
+
+            if(player2.turnNum >= 3)
+            {
+                const winCondition = checkWin(player2);
+
+                if(winCondition)
+                {
+                    player1.isTurn = false;
+                    gameWon(player2);
                 }
             }
         }
@@ -155,12 +260,18 @@ const gameController = (function()
         newGameButton.textContent = "New game";
         newGameButton.type = "button";
         newGameButton.classList.add("new-game-button");
-        newGameButton.addEventListener('click', startGame);
+        newGameButton.addEventListener('click', newGame);
 
         buttonsContainer.appendChild(newGameButton);
     }
 
-    return {startGame, playerMark, winningCombinations}
+    function newGame(e)
+    {
+        e.target.remove();
+        startGame();
+    }
+
+    return {startGame, twoPlayerMatchAction, aiMatchAction, winningCombinations}
 })()
 
 function Player(isTurn)
@@ -170,5 +281,3 @@ function Player(isTurn)
 
     return {isTurn, squaresMarked, turnNum};
 }
-
-gameController.startGame();
