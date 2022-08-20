@@ -64,6 +64,17 @@ main
     box-shadow: 3px 3px 3px rgb(145, 145, 145);
 }
 
+.winner-container
+{
+    height: 50px;
+}
+
+.winner-message
+{
+    font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+    font-size: 32px;
+}
+
 .game-container
 {
     display: none;
@@ -82,8 +93,20 @@ main
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 80px;
+    font-size: 140px;
     font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
+}
+
+.game-square-ai-move
+{
+    font-size: 90px !important;
+    transition: font-size 1s;
+}
+
+.buttons-container
+{
+    height: 50px;
+    margin-top: 20px;
 }
 
 .new-game-button
@@ -91,10 +114,10 @@ main
     display: block;
     appearance: none;
     outline: none;
+    cursor: pointer;
     width: 180px;
     height: 50px;
     font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
     font-size: 30px;
-    margin-top: 20px;
     border-radius: 3px;
 }

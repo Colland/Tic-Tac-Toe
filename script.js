@@ -45,8 +45,13 @@ const gameBoard = (function()
         return openSquares;
     }
 
+    function removeSquareClasses()
+    {
+        boardArray.forEach((element) => element.classList.remove("game-square-ai-move"));
+    }
+
     return{
-        addListeners, removeListeners, resetBoard, displayBoard, returnOpenSquares
+        addListeners, removeListeners, resetBoard, displayBoard, returnOpenSquares, removeSquareClasses
     };
 })()
 
@@ -55,6 +60,8 @@ const gameController = (function()
     let player1;
     let player2;
     let isAiMatch;
+    let totalTurns = 0;
+    let isADraw = false;
 
     const playerButton = document.querySelector("#playerMatch")
     const aiButton = document.querySelector("#aiMatch")
@@ -100,8 +107,8 @@ const gameController = (function()
 
     function populatePlayers()
     {
-        player1 = Player(true);
-        player2 = Player(false);
+        player1 = Player(true, "Player 1");
+        player2 = Player(false, "Player 2");
     }
 
     function twoPlayerMatchAction(event)
@@ -117,6 +124,7 @@ const gameController = (function()
                 player1.isTurn = false;
                 player2.isTurn = true;
                 player1.turnNum++;
+                totalTurns++;
 
                 if(player1.turnNum >= 3)
                 {
@@ -139,6 +147,7 @@ const gameController = (function()
                 player2.isTurn = false;
                 player1.isTurn = true;
                 player2.turnNum++
+                totalTurns++;
 
                 if(player2.turnNum >= 3)
                 {
@@ -152,6 +161,12 @@ const gameController = (function()
                 }
             }
         }
+
+        if(totalTurns >= 9)
+        {
+            isADraw = true;
+            gameWon();
+        }
     }
 
     function aiMatchAction(event)
@@ -162,11 +177,13 @@ const gameController = (function()
         {
             if(square.textContent === "")
             {
+                square.classList.add("game-square-ai-move");
                 square.textContent = "X";
                 player1.squaresMarked.push(parseInt(square.dataset.index));
                 player1.isTurn = false;
                 player2.isTurn = true;
                 player1.turnNum++;
+                totalTurns++;
 
                 if(player1.turnNum >= 3)
                 {
@@ -177,22 +194,33 @@ const gameController = (function()
                         player2.isTurn = false;
                         gameWon(player1);
                     }
+                    else if(totalTurns >= 9)
+                    {
+                        isADraw = true;
+                        gameWon();
+                    }
                 }
             }
         }
 
-        if(player2.isTurn)
+        if(totalTurns >= 9)
+        {
+
+        }
+        else if(player2.isTurn)
         {
             let openSquares = gameBoard.returnOpenSquares();
             let randomSquare = openSquares[Math.floor(Math.random() * openSquares.length)];
 
             const square = document.querySelector('[data-index=' + CSS.escape(randomSquare) + ']');
+            square.classList.add("game-square-ai-move");
             square.textContent = "O";
 
             player2.squaresMarked.push(parseInt(square.dataset.index));
             player2.isTurn = false;
             player1.isTurn = true;
             player2.turnNum++;
+            totalTurns++;
 
             if(player2.turnNum >= 3)
             {
@@ -202,6 +230,11 @@ const gameController = (function()
                 {
                     player1.isTurn = false;
                     gameWon(player2);
+                }
+                else if(totalTurns >= 9)
+                {
+                    isADraw = true;
+                    gameWon();
                 }
             }
         }
@@ -263,21 +296,41 @@ const gameController = (function()
         newGameButton.addEventListener('click', newGame);
 
         buttonsContainer.appendChild(newGameButton);
+
+        const winnerContainer = document.querySelector(".winner-container");
+        const winnerMessage = document.createElement("p");
+
+        if(isADraw)
+        {
+            winnerMessage.textContent = "It's a draw!";
+        }
+        else
+        {
+            winnerMessage.textContent = player.playerName + " has won!";
+        }
+
+        winnerMessage.classList.add("winner-message");
+        winnerContainer.appendChild(winnerMessage);
     }
 
     function newGame(e)
     {
         e.target.remove();
+        document.querySelector(".winner-message").remove();
+        totalTurns = 0;
+
+        gameBoard.removeSquareClasses();
         startGame();
     }
 
     return {startGame, twoPlayerMatchAction, aiMatchAction, winningCombinations}
 })()
 
-function Player(isTurn)
+function Player(isTurn, name)
 {
     let squaresMarked = [];
     let turnNum = 0;
+    let playerName = name;
 
-    return {isTurn, squaresMarked, turnNum};
+    return {isTurn, squaresMarked, turnNum, playerName};
 }
