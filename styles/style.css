@@ -121,3 +121,34 @@ main
     font-size: 30px;
     border-radius: 3px;
 }
+
+.winner-line
+{
+    display: none;
+    position: absolute;
+    margin-top: 53px;
+}
+
+.winner-line-visible
+{
+    position: absolute;
+    margin-top: 53px;
+}
+
+line
+{
+    display: none;
+}
+
+.line-animation
+{
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: dash 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+@keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }

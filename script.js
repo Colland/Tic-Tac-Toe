@@ -62,6 +62,7 @@ const gameController = (function()
     let isAiMatch;
     let totalTurns = 0;
     let isADraw = false;
+    let currentWinnerCombination = [];
 
     const playerButton = document.querySelector("#playerMatch")
     const aiButton = document.querySelector("#aiMatch")
@@ -273,6 +274,7 @@ const gameController = (function()
                 //Once 3 player numbers are found in a single winning combination, returns true.
                 if(amountOfEquivalentNumbers === 3)
                 {
+                    currentWinnerCombination = winningCombinations[i];
                     return true;
                 }
             }
@@ -285,6 +287,11 @@ const gameController = (function()
 
     function gameWon(player)
     {
+        if(!isADraw)
+        {
+            drawLine();
+        }
+
         gameBoard.removeListeners();
 
         const buttonsContainer = document.querySelector(".buttons-container");
@@ -318,9 +325,58 @@ const gameController = (function()
         e.target.remove();
         document.querySelector(".winner-message").remove();
         totalTurns = 0;
+        isADraw = false;
+
+        const svgContainer = document.querySelector("#svg-container")
+        svgContainer.classList.remove("winner-line-visible");
+        svgContainer.classList.add("winner-line");
+
+        const svgLines = document.querySelectorAll("line");
+        svgLines.forEach((element) => element.style.display = "none");
 
         gameBoard.removeSquareClasses();
         startGame();
+    }
+
+    function drawLine()
+    {
+        const svgContainer = document.querySelector("#svg-container");
+        svgContainer.classList.remove("winner-line");
+        svgContainer.classList.add("winner-line-visible");
+
+
+        if(currentWinnerCombination === winningCombinations[0])
+        {
+            document.querySelector("#line1").style.display = "block";
+        }
+        else if(currentWinnerCombination === winningCombinations[1])
+        {
+            document.querySelector("#line2").style.display = "block"; 
+        }
+        else if(currentWinnerCombination === winningCombinations[2])
+        {
+            document.querySelector("#line3").style.display = "block";  
+        }
+        else if(currentWinnerCombination === winningCombinations[3])
+        {
+            document.querySelector("#line4").style.display = "block"; 
+        }
+        else if(currentWinnerCombination === winningCombinations[4])
+        {
+            document.querySelector("#line5").style.display = "block";  
+        }
+        else if(currentWinnerCombination === winningCombinations[5])
+        {
+            document.querySelector("#line6").style.display = "block"; 
+        }
+        else if(currentWinnerCombination === winningCombinations[6])
+        {
+            document.querySelector("#line7").style.display = "block";  
+        }
+        else if(currentWinnerCombination === winningCombinations[7])
+        {
+            document.querySelector("#line8").style.display = "block"; 
+        }
     }
 
     return {startGame, twoPlayerMatchAction, aiMatchAction, winningCombinations}
