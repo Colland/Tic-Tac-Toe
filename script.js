@@ -16,8 +16,8 @@ const gameBoard = (function()
 
     function removeListeners()
     {
-        boardArray.forEach((item) => item.removeEventListener('click', gameController.playerMark));
-        //TODO remove ai match event listeners and player match listeners.
+        boardArray.forEach((item) => item.removeEventListener('click', gameController.aiMatchAction));
+        boardArray.forEach((item) => item.removeEventListener('click', gameController.twoPlayerMatchAction));
     }
 
     function displayBoard()
@@ -47,7 +47,7 @@ const gameBoard = (function()
 
     function removeSquareClasses()
     {
-        boardArray.forEach((element) => element.classList.remove("game-square-ai-move"));
+        boardArray.forEach((element) => element.classList.remove("game-square-marked"));
     }
 
     return{
@@ -100,10 +100,33 @@ const gameController = (function()
 
     function startGame()
     {
+        totalTurns = 0;
+        isADraw = false;
+
         gameBoard.displayBoard();
         gameBoard.resetBoard();
         gameBoard.addListeners(isAiMatch);
         populatePlayers();
+    }
+
+    function goToMenu(e)
+    {
+        e.target.remove();
+        document.querySelector(".game-container").style.display = "none";
+        document.querySelectorAll(".buttons-container button").forEach((e) => e.remove());
+        document.querySelector(".winner-message").remove();
+
+        const svgContainer = document.querySelector("#svg-container")
+        svgContainer.classList.remove("winner-line-visible");
+        svgContainer.classList.add("winner-line");
+
+        const svgLines = document.querySelectorAll("line");
+        svgLines.forEach((element) => element.style.display = "none");
+
+        gameBoard.removeSquareClasses();
+
+        playerButton.style.display = "block";
+        aiButton.style.display = "block";
     }
 
     function populatePlayers()
@@ -120,6 +143,7 @@ const gameController = (function()
         {
             if(square.textContent === "")
             {
+                square.classList.add("game-square-marked");
                 square.textContent = 'X';
                 player1.squaresMarked.push(parseInt(square.dataset.index));
                 player1.isTurn = false;
@@ -130,11 +154,15 @@ const gameController = (function()
                 if(player1.turnNum >= 3)
                 {
                     const winCondition = checkWin(player1);
-                    console.log(winCondition);
 
                     if(winCondition)
                     {
                         gameWon(player1);
+                    }
+                    else if(totalTurns >= 9)
+                    {
+                        isADraw = true;
+                        gameWon();
                     }
                 }
             }
@@ -143,6 +171,7 @@ const gameController = (function()
         {
             if(square.textContent === "")
             {
+                square.classList.add("game-square-marked");
                 square.textContent = "O";
                 player2.squaresMarked.push(parseInt(square.dataset.index));
                 player2.isTurn = false;
@@ -153,20 +182,18 @@ const gameController = (function()
                 if(player2.turnNum >= 3)
                 {
                     const winCondition = checkWin(player2);
-                    console.log(winCondition);
 
                     if(winCondition)
                     {
                         gameWon(player2);
                     }
+                    else if(totalTurns >= 9)
+                    {
+                        isADraw = true;
+                        gameWon();
+                    }
                 }
             }
-        }
-
-        if(totalTurns >= 9)
-        {
-            isADraw = true;
-            gameWon();
         }
     }
 
@@ -178,7 +205,7 @@ const gameController = (function()
         {
             if(square.textContent === "")
             {
-                square.classList.add("game-square-ai-move");
+                square.classList.add("game-square-marked");
                 square.textContent = "X";
                 player1.squaresMarked.push(parseInt(square.dataset.index));
                 player1.isTurn = false;
@@ -214,7 +241,7 @@ const gameController = (function()
             let randomSquare = openSquares[Math.floor(Math.random() * openSquares.length)];
 
             const square = document.querySelector('[data-index=' + CSS.escape(randomSquare) + ']');
-            square.classList.add("game-square-ai-move");
+            square.classList.add("game-square-marked");
             square.textContent = "O";
 
             player2.squaresMarked.push(parseInt(square.dataset.index));
@@ -301,8 +328,15 @@ const gameController = (function()
         newGameButton.type = "button";
         newGameButton.classList.add("new-game-button");
         newGameButton.addEventListener('click', newGame);
-
         buttonsContainer.appendChild(newGameButton);
+
+        const backToMenu = document.createElement("button");
+        backToMenu.textContent = "Menu";
+        backToMenu.type = "button";
+        backToMenu.classList.add("new-game-button");
+        backToMenu.addEventListener('click', goToMenu);
+        buttonsContainer.appendChild(backToMenu);
+
 
         const winnerContainer = document.querySelector(".winner-container");
         const winnerMessage = document.createElement("p");
@@ -320,12 +354,10 @@ const gameController = (function()
         winnerContainer.appendChild(winnerMessage);
     }
 
-    function newGame(e)
+    function newGame()
     {
-        e.target.remove();
+        document.querySelectorAll(".buttons-container button").forEach((e) => e.remove());
         document.querySelector(".winner-message").remove();
-        totalTurns = 0;
-        isADraw = false;
 
         const svgContainer = document.querySelector("#svg-container")
         svgContainer.classList.remove("winner-line-visible");

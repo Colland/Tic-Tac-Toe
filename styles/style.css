@@ -97,7 +97,7 @@ main
     font-family: "indie-flower-normal", 'Times New Roman', Times, serif;
 }
 
-.game-square-ai-move
+.game-square-marked
 {
     font-size: 90px !important;
     transition: font-size 1s;
@@ -105,7 +105,10 @@ main
 
 .buttons-container
 {
+    display: flex;
+    justify-content: space-between;
     height: 50px;
+    width: 400px;
     margin-top: 20px;
 }
 
